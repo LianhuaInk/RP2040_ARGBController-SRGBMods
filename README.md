@@ -115,8 +115,6 @@ respect FIFO capacity. USB suspend requests a blackout. Boot lighting is
 interrupted by the first complete frame. EEPROM writes are deferred until idle.
 Shutdown color transmission is best effort if a partial packet is still pending.
 
-## Attribution and licensing status
-
 ## GitHub release publishing
 
 The tag-triggered workflow tests this source and publishes the included UF2,

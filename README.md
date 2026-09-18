@@ -1,6 +1,6 @@
 # RP2040 ARGB Controller - SignalRGB CDC
 
-Firmware version: **2.1.2**. An unofficial SRGBmods LC v1-derived RP2040
+Firmware version: **2.1.3**. An unofficial SRGBmods LC v1-derived RP2040
 controller firmware and matching SignalRGB plugin, using USB CDC for RGB888.
 
 ## Hardware configuration
@@ -30,14 +30,14 @@ through the Pico USB supply.
 
 1. Exit SignalRGB and any serial monitor.
 2. Hold BOOTSEL while connecting the Pico USB cable.
-3. Copy `dist/Pico_SRGB_CDC_v2_1_2_RP2040.uf2` onto the RPI-RP2 drive.
+3. Copy `dist/Pico_SRGB_CDC_v2_1_3_RP2040.uf2` onto the RPI-RP2 drive.
 4. Put `plugin/Pico_SRGB_CDC_v2_1.js` in your SignalRGB user Plugins folder
    (`Documents/WhirlwindFX/Plugins` on Windows).
 5. Remove matching old HID plugins from the scanned Plugins folders. Do not
    let HID and CDC plugins control this device at the same time.
 6. Restart SignalRGB and configure components on Channel 1 (201 LED limit).
 
-Expected log: `CDC connected: firmware 2.1.2`. A USB serial port must enumerate.
+Expected log: `CDC connected: firmware 2.1.3`. A USB serial port must enumerate.
 The firmware retains HID interface 2 for backwards compatibility; the CDC
 plugin selects data interface 1.
 
@@ -75,7 +75,7 @@ Install these in your Arduino environment. Add the Arduino-Pico board index:
 In Arduino IDE select Raspberry Pi Pico, Adafruit TinyUSB USB stack and
 optimization `-O2`. Open the sketch under `firmware/Pico_SRGB_CDC_v2_1`.
 Keep the sketch and folder names identical; the folder name reflects the
-protocol family, while `Version` in the sketch is 2.1.2.
+protocol family, while `Version` in the sketch is 2.1.3.
 
 With Arduino CLI:
 
@@ -112,17 +112,18 @@ Only complete, validated frames are published. A partial message expires after
 250ms. The firmware reads at most 1024 bytes per loop batch. CDC communication
 does not depend on DTR; response writes use nonblocking TinyUSB functions and
 respect FIFO capacity. USB suspend requests a blackout. Boot lighting is
-interrupted by the first complete frame. EEPROM writes are deferred until idle.
+delayed for three seconds, but interrupted immediately by the first complete
+host frame. EEPROM writes are deferred until idle.
 Shutdown color transmission is best effort if a partial packet is still pending.
 
 ## GitHub release publishing
 
 The tag-triggered workflow tests this source and publishes the included UF2,
 matching JS, checksums and NOTICE.md. It does not rebuild the firmware in CI.
-The checked-in UF2 was compiled locally from the included 2.1.2 source.
+The checked-in UF2 was compiled locally from the included 2.1.3 source.
 Future firmware changes require updating the binary and checksum list before
 tagging. Enable Actions for the repository and push a version tag, such as
-`v2.1.2`, after uploading the main branch. No personal access token is stored
+`v2.1.3`, after uploading the main branch. No personal access token is stored
 in this repository; the workflow uses GitHub's built-in token.
 
 ## Attribution and licensing status

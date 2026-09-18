@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.3
+
+- Keep boot lighting off for three seconds before progressive full-white animation.
+- Clear physical LEDs at startup; complete host frames still take over immediately.
+- Do not block USB processing or control acknowledgements during the delay.
+
 ## 2.1.2
 
 - Increase boot animation peak white brightness from 64 to 255.

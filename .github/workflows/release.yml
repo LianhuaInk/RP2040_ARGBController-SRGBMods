@@ -15,7 +15,7 @@ jobs:
       - name: Verify release asset checksums
         run: |
           mkdir -p build/release
-          cp dist/Pico_SRGB_CDC_v2_1_2_RP2040.uf2 plugin/Pico_SRGB_CDC_v2_1.js dist/SHA256SUMS.txt build/release/
+          cp dist/Pico_SRGB_CDC_v2_1_3_RP2040.uf2 plugin/Pico_SRGB_CDC_v2_1.js dist/SHA256SUMS.txt build/release/
           cd build/release
           sha256sum --check SHA256SUMS.txt
       - name: Create GitHub Release
@@ -26,7 +26,7 @@ jobs:
             --verify-tag \
             --title "CDC $GITHUB_REF_NAME" \
             --notes-file RELEASE_NOTES.md \
-            dist/Pico_SRGB_CDC_v2_1_2_RP2040.uf2 \
+            dist/Pico_SRGB_CDC_v2_1_3_RP2040.uf2 \
             plugin/Pico_SRGB_CDC_v2_1.js \
             dist/SHA256SUMS.txt \
             NOTICE.md

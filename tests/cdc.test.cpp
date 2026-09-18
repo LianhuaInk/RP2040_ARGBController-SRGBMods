@@ -10,12 +10,27 @@ int main(int argc, char **argv) {
   FILE *f=fopen(argv[1],"rb"); assert(f);assert(fread(packet,1,615,f)==615);fclose(f);
   setup(); assert(outputReady);
   static_assert(BootBrightness == 255, "Boot lighting must default to full brightness");
-  fakeMillis = 80;
+  loop();
+  for (auto value : leds.pixels) assert(value == 0);
+  leds.available = true;
+  const auto initialShows = leds.shows;
+  fakeMillis = 2999;
+  renderBoot(fakeMillis);
+  assert(leds.shows == initialShows && bootActive);
+  fakeMillis = 3000;
+  renderBoot(fakeMillis);
+  assert(leds.pixels[physical[0]] == 0x1f1f1f);
+  assert(leds.pixels[physical[1]] == 0);
+  leds.available = true;
+  fakeMillis = 3080;
   renderBoot(fakeMillis);
   assert(leds.pixels[physical[0]] == 0xffffff);
   assert(leds.pixels[physical[1]] == 0x1f1f1f);
   leds.available = true;
   uint8_t request[64]={ControlMagic,1,7,0}, controlPacket[76];
+  // A complete host frame must take over even during the startup delay.
+  fakeMillis = bootStart = 0;
+  leds.clear();
   encodeCdc(controlPacket,2,9,request,64);
   Serial.connected=false; // SignalRGB may open CDC without asserting DTR.
   Serial.capacity=13;feed(controlPacket,76);loop();

@@ -14,8 +14,9 @@ using namespace FastRGB;
 constexpr uint8_t PortCount = 7, Stride = 48, QueueDepth = 32;
 constexpr uint8_t PortLengths[PortCount] = {24, 40, 32, 20, 48, 12, 25};
 int8_t pins[8] = {12, 13, 14, 15, 16, 17, 18, -1};
-constexpr uint8_t BootBrightness = 255;
-constexpr uint8_t Version[3] = {2, 1, 2};
+constexpr uint8_t BootBrightness = 255;//Boot Animation Brightness
+constexpr uint32_t BootDelayMs = 3000;//Boot Animation Delay
+constexpr uint8_t Version[3] = {2, 1, 3};
 const uint8_t descriptor[] = {TUD_HID_REPORT_DESC_GENERIC_INOUT(64)};
 Adafruit_USBD_HID hid;
 Adafruit_NeoPXL8 leds(Stride, pins, NEO_GRB);
@@ -120,7 +121,7 @@ void processControl(const uint8_t *p, uint32_t now) {
   }
   makeReply(p[1], p[2], outputReady ? 0 : 2);
 }
-
+//Init Led and record bootstart
 void setup() {
   Serial.begin(115200);
   queue_init(&receiveQueue, sizeof(Report), QueueDepth);
@@ -146,7 +147,7 @@ void setup() {
     for (uint8_t i = 0; i < PortLengths[port]; ++i) physical[logical++] = port * Stride + i;
   }
   outputReady = logical == LedCount && leds.begin();
-  if (outputReady) leds.clear();
+  if (outputReady) { leds.clear(); blackPending = true; }
   bootStart = millis();
 }
 
@@ -158,11 +159,13 @@ void fillSolid(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness) {
                        (uint16_t(b) * brightness + 127) / 255);
   }
 }
-
+//Boot Animation
 void renderBoot(uint32_t now) {
+  const uint32_t bootAge = now - bootStart;
+  if (bootAge < BootDelayMs) return;
   if (now - bootTick < 10 || !leds.canShow()) return;
   bootTick = now;
-  const uint32_t elapsed = now - bootStart;
+  const uint32_t elapsed = bootAge - BootDelayMs;
   const uint16_t completed = elapsed / 80 > LedCount ? LedCount : uint16_t(elapsed / 80);
   for (uint16_t i = 0; i < LedCount; ++i) {
     const uint8_t value = i < completed ? BootBrightness :
@@ -202,7 +205,7 @@ void renderHardware(uint32_t now) {
   }
   leds.show();
 }
-
+//loop:If bootActive are ture,Are use renderBoot
 void loop() {
   const uint32_t now = millis();
   if (TinyUSBDevice.suspended()) {

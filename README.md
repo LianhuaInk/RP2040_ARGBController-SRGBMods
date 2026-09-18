@@ -6,7 +6,7 @@ controller firmware and matching SignalRGB plugin, using USB CDC for RGB888.
 ## Hardware configuration
 
 Raspberry Pi Pico (RP2040), WS2812B-compatible GRB LEDs, seven outputs:
-
+My Led Config
 | GPIO | LEDs |
 | --- | --- |
 | 12 | 24 |

@@ -1,0 +1,7 @@
+build/
+work/
+node_modules/
+*.obj
+*.exe
+*.o
+.DS_Store

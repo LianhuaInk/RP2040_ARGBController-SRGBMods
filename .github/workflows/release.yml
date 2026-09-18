@@ -1,0 +1,32 @@
+name: Publish release assets
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run protocol and scheduler tests
+        run: node tests/run.cjs
+      - name: Verify release asset checksums
+        run: |
+          mkdir -p build/release
+          cp dist/Pico_SRGB_CDC_v2_1_2_RP2040.uf2 plugin/Pico_SRGB_CDC_v2_1.js dist/SHA256SUMS.txt build/release/
+          cd build/release
+          sha256sum --check SHA256SUMS.txt
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "CDC $GITHUB_REF_NAME" \
+            --notes-file RELEASE_NOTES.md \
+            dist/Pico_SRGB_CDC_v2_1_2_RP2040.uf2 \
+            plugin/Pico_SRGB_CDC_v2_1.js \
+            dist/SHA256SUMS.txt \
+            NOTICE.md
